@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
+import { BarraDeNavegacion } from "@/components/barra-de-navegacion/BarraDeNavegacion";
+import { PieDePagina } from "@/components/pie-de-pagina/PieDePagina";
+import { ClerkProvider } from '@clerk/nextjs'
+import { esES } from '@clerk/localizations'
+const libreFranklin = localFont({
+  src: "./fonts/LibreFranklin-VariableFont_wght.ttf",
+  variable: "--font-libre-franklin",
   weight: "100 900",
 });
 
@@ -24,12 +22,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider localization={esES}>
+      <html lang="en">
+        <body
+          className={`${libreFranklin.variable} antialiased`}
+        >
+          <BarraDeNavegacion />
+          {children}
+          <PieDePagina />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

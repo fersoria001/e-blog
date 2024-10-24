@@ -1,0 +1,169 @@
+
+.editor-container {
+  @apply max-w-2xl mx-auto my-5 bg-background text-foreground rounded-lg shadow-md;
+}
+
+.editor-inner {
+  @apply relative bg-card;
+}
+
+.editor-input {
+  @apply min-h-[150px] resize-none text-base outline-none p-4 caret-primary;
+}
+
+.editor-placeholder {
+  @apply text-muted-foreground absolute top-4 left-4 text-base pointer-events-none;
+}
+
+
+.editor-text-bold {
+  @apply font-bold;
+}
+
+.editor-text-italic {
+  @apply italic;
+}
+
+.editor-text-underline {
+  @apply underline;
+}
+
+.editor-text-strikethrough {
+  @apply line-through;
+}
+
+.editor-text-underlineStrikethrough {
+  @apply underline line-through;
+}
+
+.editor-text-code {
+  @apply bg-muted text-muted-foreground px-1 py-0.5 font-mono text-sm rounded;
+}
+
+.editor-link {
+  @apply text-primary hover:underline;
+}
+
+
+.editor-code {
+  @apply bg-muted text-muted-foreground font-mono text-sm p-4 my-4 rounded-md overflow-x-auto relative;
+}
+
+.editor-code:before {
+  @apply content-[attr(data-gutter)] absolute left-0 top-0 bg-secondary text-secondary-foreground p-2 border-r border-border;
+}
+
+.editor-code:after {
+  @apply content-[attr(data-highlight-language)] absolute top-0 right-2 p-1 text-xs uppercase text-muted-foreground;
+}
+
+
+.editor-heading-h1 {
+  @apply text-2xl font-semibold text-foreground mb-4;
+}
+
+.editor-heading-h2 {
+  @apply text-xl font-semibold text-foreground mt-6 mb-3;
+}
+
+
+.editor-quote {
+  @apply border-l-4 border-primary pl-4 italic text-muted-foreground my-4;
+}
+
+
+.EditorTheme__ol1,
+.EditorTheme__ol2,
+.EditorTheme__ol3,
+.EditorTheme__ol4,
+.EditorTheme__ol5,
+.EditorTheme__ul {
+  @apply pl-6 my-4;
+}
+
+.EditorTheme__listItem {
+  @apply my-2;
+}
+
+.EditorTheme__listItemChecked,
+.EditorTheme__listItemUnchecked {
+  @apply relative pl-8 my-2 list-none;
+}
+
+.EditorTheme__listItemChecked:before,
+.EditorTheme__listItemUnchecked:before {
+  @apply content-[''] absolute left-0 top-1 w-5 h-5 border border-input rounded;
+}
+
+.EditorTheme__listItemChecked:before {
+  @apply bg-primary border-primary;
+}
+
+.EditorTheme__listItemChecked:after {
+  @apply content-[''] absolute left-[5px] top-[9px] w-3 h-[6px] border-r-2 border-b-2 border-background transform rotate-45;
+}
+
+
+.tree-view-output {
+  @apply bg-muted text-muted-foreground p-4 text-sm whitespace-pre-wrap rounded-b-lg overflow-auto;
+}
+
+
+.debug-timetravel-panel {
+  @apply overflow-hidden p-4 flex bg-muted rounded-lg mt-4;
+}
+
+.debug-timetravel-panel-slider {
+  @apply flex-grow;
+}
+
+.debug-timetravel-panel-button,
+.debug-timetravel-button {
+  @apply bg-primary text-primary-foreground px-2 py-1 rounded text-xs hover:bg-primary/90 transition-colors;
+}
+
+.debug-timetravel-button {
+  @apply absolute top-2 right-2;
+}
+
+
+.editor-code::-webkit-scrollbar {
+  @apply w-2 h-2 bg-transparent;
+}
+
+.editor-code::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/50 rounded-full;
+}
+
+
+.editor-tokenComment {
+  @apply text-muted-foreground;
+}
+
+.editor-tokenPunctuation {
+  @apply text-muted-foreground;
+}
+
+.editor-tokenProperty {
+  @apply text-primary;
+}
+
+.editor-tokenSelector {
+  @apply text-accent-foreground;
+}
+
+.editor-tokenOperator {
+  @apply text-secondary-foreground;
+}
+
+.editor-tokenAttr {
+  @apply text-accent;
+}
+
+.editor-tokenVariable {
+  @apply text-destructive;
+}
+
+.editor-tokenFunction {
+  @apply text-secondary;
+}

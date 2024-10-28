@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../ui/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import clsx from "clsx";
+import NoHayResultadosDeBusqueda from "./NoHayResultadosDeBusqueda";
 
 
 export function ResultadosDeBusqueda({ resultadoInicial }: { resultadoInicial: ResultadoPaginado<Articulo> }) {
@@ -45,7 +46,15 @@ export function ResultadosDeBusqueda({ resultadoInicial }: { resultadoInicial: R
     }
 
     const numerosDePagina = obtenerNumerosDePagina()
-
+    if (resultadoInicial.data.length < 1) {
+        return (
+            <div className="flex flex-col min-h-screen">
+                <div className="my-auto">
+                    <NoHayResultadosDeBusqueda consulta={searchParams.get("c") || undefined} />
+                </div>
+            </div>
+        )
+    }
     return (
         <div className="flex flex-col min-h-screen">
             <ListaDeArticulos

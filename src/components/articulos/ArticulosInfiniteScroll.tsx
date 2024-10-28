@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer"
 import { ListaDeArticulos } from "../articulos/ListaDeArticulos";
 
-export function ArticulosInfiniteScroll<T extends ParametrosDePaginacion>({ resultadoInicial, titulo, args, obtenerArticulos }: {
+export function ArticulosInfiniteScroll<T extends ParametrosDePaginacion>({ resultadoInicial, titulo, args, obtenerArticulos, editable = false }: {
     resultadoInicial: ResultadoPaginado<Articulo>,
     titulo: string,
     args: T,
-    obtenerArticulos: (arg0: T) => Promise<ResultadoPaginado<Articulo>>
+    obtenerArticulos: (arg0: T) => Promise<ResultadoPaginado<Articulo>>,
+    editable?: boolean
 }) {
     const { ref, inView } = useInView();
     const [posicion, setPosicion] = useState(resultadoInicial.offset);
@@ -41,6 +42,7 @@ export function ArticulosInfiniteScroll<T extends ParametrosDePaginacion>({ resu
             estaCargando={estaCargando}
             inViewRef={ref}
             titulo={titulo}
-            articulos={articulos} />
+            articulos={articulos}
+            editable={editable} />
     )
 }

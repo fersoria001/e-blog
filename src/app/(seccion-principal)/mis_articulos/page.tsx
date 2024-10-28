@@ -12,6 +12,7 @@ export default async function Pagina() {
             args={{ idDeAutor: userId }}
             titulo="Mis articulos"
             obtenerArticulos={encontrarArticulosPorIdDeAutor}
+            editable={true}
         />
     )
 }

@@ -20,8 +20,8 @@ import { CharacterLimitPlugin } from '@lexical/react/LexicalCharacterLimitPlugin
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
-import { $getRoot, EditorState, LexicalEditor } from 'lexical';
-import { guardarArticulo, guardarBorradorDeArticulo } from '@/lib/actions';
+import { $getRoot, createEditor, EditorState, LexicalEditor } from 'lexical';
+import { actualizarArticulo, guardarArticulo, guardarBorradorDeArticulo } from '@/lib/actions';
 import editorConfig from './config';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
@@ -32,6 +32,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group';
 import { Badge } from '../ui/badge';
 import { useUser } from '@clerk/nextjs';
+import { SetEditableStatePlugin } from './plugins/SetEditableStatePlugin';
 
 const esquemaDePublicacion = z.object({
     titulo: z.
@@ -75,12 +76,12 @@ const MATCHERS = [
 ];
 
 
-export function EditorDeTexto() {
+export function EditorDeTexto({ estadoPrevio }: { estadoPrevio?: { id: string, estadoSerializado: string, titulo: string, etiquetas: string[] } }) {
     const [editorState, setEditorState] = useState<string>("")
     const [textoPlano, setTextoPlano] = useState<string>("")
     const [estaGuardando, setEstaGuardando] = useState<boolean>(false)
     const { isSignedIn } = useUser();
-    
+
     const onEditorChange = (editorState: EditorState, editor: LexicalEditor, tags: Set<string>) => {
         const editorStateJSON = editorState.toJSON();
         setEditorState(JSON.stringify(editorStateJSON));
@@ -90,18 +91,22 @@ export function EditorDeTexto() {
     const form = useForm<z.infer<typeof esquemaDePublicacion>>({
         resolver: zodResolver(esquemaDePublicacion),
         defaultValues: {
-            titulo: "",
-            etiquetas: []
+            titulo: estadoPrevio ? estadoPrevio.titulo : "",
+            etiquetas: estadoPrevio ? estadoPrevio.etiquetas : []
         },
     })
 
     async function onSubmit(values: z.infer<typeof esquemaDePublicacion>) {
         if (!editorState && !textoPlano) return
-        if (!isSignedIn) {
-            setEstaGuardando(true)
-            await guardarBorradorDeArticulo({ textoPlano: textoPlano, textoSerializado: editorState, titulo: values.titulo, etiquetas: values.etiquetas })
-        }
         setEstaGuardando(true)
+        if (!isSignedIn) {
+            await guardarBorradorDeArticulo({ textoPlano: textoPlano, textoSerializado: editorState, titulo: values.titulo, etiquetas: values.etiquetas })
+            return
+        }
+        if (estadoPrevio) {
+            await actualizarArticulo({ id: estadoPrevio.id, textoPlano: textoPlano, textoSerializado: editorState, titulo: values.titulo, etiquetas: values.etiquetas })
+            return
+        }
         await guardarArticulo({ textoPlano: textoPlano, textoSerializado: editorState, titulo: values.titulo, etiquetas: values.etiquetas })
     }
 
@@ -114,16 +119,17 @@ export function EditorDeTexto() {
                         <DialogTrigger className='mb-4 xl:mb-0 w-36 self-center xl:self-start xl:mt-2'>
                             <Button>
                                 <BookPlus />
-                                Publicar
+                                {estadoPrevio ? "Guardar cambios" : "Publicar"}
                             </Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
                                 <DialogTitle>
-                                    Estas listo para publicar tu articulo?
+                                    Estas listo para {estadoPrevio ? "actualizar" : "publicar"} tu articulo?
                                 </DialogTitle>
                                 <DialogDescription>
-                                    Tu articulo se publicará y todos los usuarios podran verlo.
+                                    {estadoPrevio ? "Tus cambios se publicaran" : "Tu articulo se publicará"} y todos los usuarios podran
+                                    {estadoPrevio ? " verlos" : " verlo"}.
                                 </DialogDescription>
                             </DialogHeader>
                             <Form {...form}>
@@ -184,12 +190,12 @@ export function EditorDeTexto() {
                                     {estaGuardando ?
                                         (<Button disabled>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Publicando...
+                                            {estadoPrevio ? "Guardando..." : "Publicando..."}
                                         </Button>)
                                         :
 
                                         (<Button type="submit">
-                                            Publicar
+                                            {estadoPrevio ? "Guardar cambios" : "Publicar"}
                                         </Button>)
                                     }
                                 </form>
@@ -219,6 +225,9 @@ export function EditorDeTexto() {
                     <AutoLinkPlugin matchers={MATCHERS} />
                     <CharacterLimitPlugin charset='UTF-16' maxLength={15000} renderer={MaxLengthRenderer} />
                     <OnChangePlugin onChange={onEditorChange} />
+                    {
+                        estadoPrevio && <SetEditableStatePlugin serializedPrevState={estadoPrevio.estadoSerializado} />
+                    }
                     {/* <TreeViewPlugin /> */}
 
                 </div>

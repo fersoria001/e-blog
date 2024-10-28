@@ -1,7 +1,5 @@
 import { ListaDeArticulosLateral } from "@/components/articulos/ListaDeArticulosLateral";
 import { obtenerTodosLosArticulosPorMasReacciones } from "@/lib/actions";
-import { Toaster } from "sonner";
-import { Toaster as NormalToaster } from "@/components/ui/toaster"
 export default async function Layout({
     children,
 }: Readonly<{
@@ -14,8 +12,6 @@ export default async function Layout({
             <main>
                 {children}
             </main>
-            <Toaster />
-            <NormalToaster />
         </div>
     )
 }

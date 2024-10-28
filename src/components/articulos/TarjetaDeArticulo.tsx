@@ -29,16 +29,18 @@ import {
     TwitterIcon,
 } from 'next-share';
 import EntradaConPortapapeles from "../misc/EntradaConPortapapeles";
+import { useUser } from "@clerk/nextjs";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const tamaños = {
     "default": "default",
     "sm": "sm"
 }
 
-export function TarjetaDeArticulo({ tamaño = "default", articulo }: { tamaño?: keyof typeof tamaños, articulo: Articulo }) {
+export function TarjetaDeArticulo({ articulo, tamaño = "default", editable = false }: { tamaño?: keyof typeof tamaños, articulo: Articulo, editable?: boolean }) {
     const URL_PARA_COMPARTIR = `${process.env.NEXT_PUBLIC_HOST}/articulo/${articulo.id}`
     const [contenidoHtml, setContenidoHtml] = useState<string | null>(null);
     const { refresh } = useRouter()
+    const { isSignedIn } = useUser()
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const editor = createEditor(editorConfig);
@@ -87,14 +89,14 @@ export function TarjetaDeArticulo({ tamaño = "default", articulo }: { tamaño?:
                         </div>)
                     }
                     <TooltipProvider>
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 p-4 ml-auto">
+                        <div className="flex items-center justify-center gap-4 p-4 ml-auto">
                             <Tooltip>
                                 <TooltipTrigger asChild>
                                     <Button
                                         variant="outline"
                                         size="icon"
                                         className={clsx('w-12 h-12 rounded-full transition-colors hover:bg-red-50', {
-                                            'pointer-events-none dark:pointer-events-none': tamaño != "default",
+                                            'pointer-events-none dark:pointer-events-none': tamaño != "default" || !isSignedIn,
                                             'bg-red-100 text-red-500 hover:bg-red-200': articulo.is_liked
                                         })}
                                         onClick={manejarMeGusta}
@@ -116,7 +118,7 @@ export function TarjetaDeArticulo({ tamaño = "default", articulo }: { tamaño?:
                                         size="icon"
                                         className={clsx('w-12 h-12 rounded-full transition-colors hover:bg-yellow-50',
                                             {
-                                                'pointer-events-none dark:pointer-events-none': tamaño != "default",
+                                                'pointer-events-none dark:pointer-events-none': tamaño != "default" || !isSignedIn,
                                                 'bg-yellow-100 text-yellow-500 hover:bg-yellow-200': articulo.is_favorited,
                                             })
                                         }
@@ -193,9 +195,18 @@ export function TarjetaDeArticulo({ tamaño = "default", articulo }: { tamaño?:
             </CardContent>
             {tamaño == "sm" &&
                 <CardFooter className="font-bold flex-col">
-                    <Link className="self-start" href={`/articulo/${articulo.id}`}>
-                        ...Leer más
-                    </Link>
+                    <div className="flex w-full sm:w-1/2 self-start justify-between mb-4">
+                        <Link className="shrink-0" href={`/articulo/${articulo.id}`}>
+                            ...Leer más
+                        </Link>
+                        {editable &&
+                            <Link href={`/editar_articulo/${articulo.id}`}>
+                                <Button>
+                                    Editar
+                                </Button>
+                            </Link>
+                        }
+                    </div>
                     <div className="flex self-end gap-3">
                         {
                             articulo.tags.map((etiqueta) => {
